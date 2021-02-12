@@ -1,0 +1,121 @@
+$#include <alg/vector.h>
+$#include <alg/plane.h>
+$#include <alg/quatern.h>
+$#include <alg/matrix.h>
+$#include <alg/spline.h>
+
+$#ifndef __GNUG__
+$#pragma warning( disable : 4800 )
+$#endif
+
+class AlgVector
+{
+  float x;
+  float y;
+  float z;
+  AlgVector ();
+  AlgVector (float vx, float vy, float vz);
+  ~AlgVector ();
+  void Set (float vx, float vy, float vz);
+  float Dot (const AlgVector& q) const;
+  void Cross (const AlgVector& a, const AlgVector& b);
+  float Length () const;
+  void Normalize ();
+  void Print (const char* label=0) const;
+};
+
+AlgVector Intersect (const AlgPlane p1, const AlgPlane p2, const AlgPlane p3);
+
+class AlgPlane
+{
+  AlgPlane ();
+  AlgPlane (float a, float b, float c, float d);
+  AlgPlane (const AlgVector& n, float d);
+  ~AlgPlane ();
+  void Set (float a, float b, float c, float d);
+  AlgVector GetNormal ();
+  void Normalize ();
+  float Distance (const AlgVector& p) const;
+	void Print (const char* label=0) const;
+
+};
+
+class AlgQuatern
+{
+  AlgQuatern ();
+  AlgQuatern (float angle, float x, float y, float z);
+  AlgQuatern (float angle, const AlgVector& axis);
+  AlgQuatern (const AlgVector &u, const AlgVector &v, const AlgVector &w);
+  ~AlgQuatern ();
+  void Set (float angle, float x, float y, float z);
+  void Set (float angle, const AlgVector& axis);
+  void Set (const AlgVector &u, const AlgVector &v, const AlgVector &w);
+  void Mult (const AlgQuatern& q);
+  float GetAngle () const;
+  void GetAxis (float* x=0, float* y=0, float* z=0) const;
+  void Get(AlgVector *u, AlgVector *v, AlgVector *w);
+  void Print (const char* label=0);
+};
+
+class AlgMatrix
+{
+  AlgMatrix();
+	AlgMatrix(float v[16]);
+  ~AlgMatrix();
+  void Identity ();
+  void Translate (float x, float y, float z);
+  void Translate (const AlgVector& v);
+  void Scale (float x, float y, float z);
+  void Scale (const AlgVector& v);
+  void Scale (float x, float y, float z, float rx, float ry, float rz);
+  void Scale (const AlgVector& v, const AlgVector& r);
+  void Rotate (float a, float x, float y, float z);
+  void Rotate (float a, const AlgVector& p);
+  void Rotate (const AlgQuatern& q);
+  void Rotate (float a, float x, float y, float z, float rx, float ry, float rz);
+  void Rotate (float a, const AlgVector& p, const AlgVector& r);
+  void Rotate (const AlgQuatern& q, const AlgVector& r);
+  void LookAt      (const AlgVector& pos, const AlgVector& target, const AlgVector& up);
+  void Ortho       (float pleft, float pright, float pbottom, float ptop, float pnear, float pfar);
+  void Frustum     (float pleft, float pright, float pbottom, float ptop, float pnear, float pfar);
+  void Perspective (float fovy, float aspect, float znear, float zfar);
+  void Accum (const AlgMatrix& m);
+  void PreAccum(const AlgMatrix& m);
+  void Transpose ();
+  bool IsIdentity ();
+  void Invert ();
+  AlgMatrix Inverse () const;
+  AlgVector Transform(float x, float y, float z) const;
+  AlgVector Transform(const AlgVector& p) const;
+  AlgVector TransformVector(float vx, float vy, float vz) const;
+  AlgVector TransformVector(const AlgVector& v) const;
+  void Print (const char* label=0) const;
+  void GetMatrixDouble@GetMatrix (double v[16] = 0);
+};
+
+class AlgSpline
+{
+  AlgSpline ();
+  ~AlgSpline ();
+
+  void SetDefaultTension (double v);
+  void SetAutoKnotMethod (int autoknot);
+  void Begin ();
+  void AddPosition (double x, double y, double z);
+  void SetTension (double v);
+  void SetKnot (double t);
+  bool End ();
+
+  bool ModifyPosition (int i, double x, double y, double z);
+  bool ModifyKnot (int i, double t);
+  bool ModifyTension (int i, double v);
+  bool Recompute ();
+
+  void GetPosition (double t, double* x=0, double* y=0, double* z=0);
+
+	int GetNSegments ();
+  int GetNPositions ();
+  void GetGivenPosition (int i, double* x=0, double* y=0, double* z=0);
+  double GetKnot (int i);
+  double GetTension (int i);
+};
